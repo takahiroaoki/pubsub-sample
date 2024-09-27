@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - ..:/workspaces/pubsub-sample
+    working_dir: /workspaces/pubsub-sample
+    tty: true
+    depends_on:
+      - pubsub
+  pubsub:
+    image: docker.io/google/cloud-sdk:494.0.0
+    ports:
+      - 8085:8085
+    environments:
+      PROJECT_ID: $PROJECT_ID
+      EMULATOR_HOST: 0.0.0.0:8085
+    command: /bin/sh -c "gcloud beta emulators pubsub start --project=$PROJECT_ID --host-port=$EMULATOR_HOST"
