@@ -24,5 +24,4 @@ services:
       EMULATOR_HOST: 0.0.0.0:8085
     volumes:
       - ../pubsub:/pubsub
-    working_dir: /pubsub
-    command: ./command.sh
+    command: /bin/bash /pubsub/command.sh
