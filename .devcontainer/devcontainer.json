@@ -1,0 +1,14 @@
+{
+  "name": "grpc-sample",
+  "dockerComposeFile": "compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/pubsub-sample",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "ms-azuretools.vscode-docker"
+			]
+		}
+	}
+}
