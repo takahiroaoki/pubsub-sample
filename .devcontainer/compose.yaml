@@ -17,5 +17,12 @@ services:
       - 8085:8085
     environment:
       PROJECT_ID: $PROJECT_ID
+      TOPIC_ID: $TOPIC_ID
+      DEAD_LETTER_TOPIC_ID: $DEAD_LETTER_TOPIC_ID
+      SUBSCRIPTION_ID: $SUBSCRIPTION_ID
+      DEAD_LETTER_SUBSCRIPTION_ID: $DEAD_LETTER_SUBSCRIPTION_ID
       EMULATOR_HOST: 0.0.0.0:8085
-    command: /bin/sh -c "gcloud beta emulators pubsub start --project=$PROJECT_ID --host-port=$EMULATOR_HOST"
+    volumes:
+      - ../pubsub:/pubsub
+    working_dir: /pubsub
+    command: ./command.sh
