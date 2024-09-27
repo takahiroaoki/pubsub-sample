@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Containerfile
     volumes:
-      - ..:/workspaces/pubsub-sample
-    working_dir: /workspaces/pubsub-sample
+      - ..:/mnt/pubsub-sample
+    working_dir: /mnt/pubsub-sample
     tty: true
     depends_on:
       - pubsub
@@ -17,7 +17,7 @@ services:
       PUBSUB_DEAD_LETTER_TOPIC_ID: $PUBSUB_DEAD_LETTER_TOPIC_ID
       PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
       PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
-      PUBSUB_EMULATOR_HOST: docker.host.internal:8085
+      PUBSUB_EMULATOR_HOST: pubsub:8085
   pubsub:
     image: docker.io/google/cloud-sdk:494.0.0
     ports:

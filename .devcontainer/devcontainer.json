@@ -1,8 +1,8 @@
 {
-  "name": "grpc-sample",
+  "name": "pubsub-sample",
   "dockerComposeFile": "compose.yaml",
   "service": "app",
-  "workspaceFolder": "/workspaces/pubsub-sample",
+  "workspaceFolder": "/mnt/pubsub-sample",
   "customizations": {
     "vscode": {
       "extensions": [

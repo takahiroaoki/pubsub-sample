@@ -2,6 +2,9 @@ package infra
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"log"
 	"subscriber/handler"
 
 	"cloud.google.com/go/pubsub"
@@ -14,14 +17,22 @@ type SampleSubscriber struct {
 func (ss *SampleSubscriber) Receive(ctx context.Context, msgHandler handler.Handler[handler.SampleMessage]) error {
 	if err := ss.subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		if msg.DeliveryAttempt != nil {
-			// TODO
+			log.Printf("DeliveryAttempt: %v", *msg.DeliveryAttempt)
 		}
 
-		if err := msgHandler.HandleMessage(ctx, handler.NewSampleMessage()); err != nil {
+		decoded := struct {
+			Word string `json:"word"`
+		}{}
+		if err := json.Unmarshal(msg.Data, &decoded); err != nil {
+			log.Println("Error on unmarshal message")
+			msg.Ack()
+		}
+		if err := msgHandler.HandleMessage(ctx, handler.NewSampleMessage(decoded.Word)); err != nil {
+			log.Println(err)
 			ss.handleError(err, msg)
 		}
 	}); err != nil {
-		// TODO
+		return err
 	}
 	return nil
 }
@@ -50,11 +61,20 @@ func NewSampleSubscriber(ctx context.Context, config SampleSubscriberConfig) (Su
 
 	closeFunc := func() {
 		if err := client.Close(); err != nil {
-			// TODO:
+			log.Println("falied to close subscription client")
 		}
 	}
 
+	subscription := client.Subscription(config.subscriptionID)
+	exists, err := subscription.Exists(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	if !exists {
+		return nil, nil, errors.New("subscription does not exist")
+	}
+
 	return &SampleSubscriber{
-		subscription: client.Subscription(config.subscriptionID),
+		subscription: subscription,
 	}, closeFunc, nil
 }
