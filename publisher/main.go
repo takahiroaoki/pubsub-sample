@@ -1,7 +1,23 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"publisher/config"
+	"publisher/infra"
+)
 
 func main() {
-	fmt.Println("publisher")
+	pubsubConfig := config.NewPubSubConfig()
+	samplePublisherConfig := infra.NewSamplePublisherConfig(pubsubConfig.ProjectID(), pubsubConfig.TopicID())
+	samplePublisher, closeFunc, err := infra.NewSamplePublisher(samplePublisherConfig)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer closeFunc()
+
+	srvID, err := samplePublisher.Publish(infra.NewSampleMessage("test"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("ServerID: %s was successfully published!", srvID)
 }

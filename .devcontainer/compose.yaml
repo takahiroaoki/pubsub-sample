@@ -6,22 +6,29 @@ services:
       context: .
       dockerfile: Containerfile
     volumes:
-      - ..:/workspaces/pubsub-sample
-    working_dir: /workspaces/pubsub-sample
+      - ..:/mnt/pubsub-sample
+    working_dir: /mnt/pubsub-sample
     tty: true
     depends_on:
       - pubsub
+    environment:
+      PUBSUB_PROJECT_ID: $PUBSUB_PROJECT_ID
+      PUBSUB_TOPIC_ID: $PUBSUB_TOPIC_ID
+      PUBSUB_DEAD_LETTER_TOPIC_ID: $PUBSUB_DEAD_LETTER_TOPIC_ID
+      PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
+      PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
+      PUBSUB_EMULATOR_HOST: pubsub:8085
   pubsub:
     image: docker.io/google/cloud-sdk:494.0.0
     ports:
       - 8085:8085
     environment:
-      PROJECT_ID: $PROJECT_ID
-      TOPIC_ID: $TOPIC_ID
-      DEAD_LETTER_TOPIC_ID: $DEAD_LETTER_TOPIC_ID
-      SUBSCRIPTION_ID: $SUBSCRIPTION_ID
-      DEAD_LETTER_SUBSCRIPTION_ID: $DEAD_LETTER_SUBSCRIPTION_ID
-      EMULATOR_HOST: 0.0.0.0:8085
+      PUBSUB_PROJECT_ID: $PUBSUB_PROJECT_ID
+      PUBSUB_TOPIC_ID: $PUBSUB_TOPIC_ID
+      PUBSUB_DEAD_LETTER_TOPIC_ID: $PUBSUB_DEAD_LETTER_TOPIC_ID
+      PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
+      PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
+      PUBSUB_EMULATOR_HOST: 0.0.0.0:8085
     volumes:
       - ../pubsub:/pubsub
     command: /bin/bash /pubsub/command.sh
