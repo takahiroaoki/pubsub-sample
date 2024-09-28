@@ -15,5 +15,5 @@ $ make setup
 $ make subscribe
 
 # on another terminal, publish a message
-$ make publish
+$ make msg=${your message} publish
 ```
