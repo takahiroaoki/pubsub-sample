@@ -8,4 +8,4 @@ subscribe:
 	cd ./subscriber && go run main.go
 
 publish:
-	cd ./publisher && go run main.go
+	cd ./publisher && go run main.go -msg=$(msg)
