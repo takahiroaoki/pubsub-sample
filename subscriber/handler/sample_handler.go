@@ -2,30 +2,32 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"log"
 )
 
-type SampleMessage struct {
-	word string
-}
+type sampleHandlerImpl struct{}
 
-func NewSampleMessage(word string) *SampleMessage {
-	return &SampleMessage{
-		word: word,
+func (shi *sampleHandlerImpl) HandleMessage(ctx context.Context, msg *sampleMessage) error {
+	if shi == nil {
+		return errors.New("*sampleHandlerImpl is nil")
 	}
-}
-
-type SampleHandler struct{}
-
-func (sh *SampleHandler) HandleMessage(ctx context.Context, msg *SampleMessage) error {
-	log.Printf("> %s", msg.word)
+	log.Printf("[MESSAGE] %s", msg.word)
 	return nil
 }
 
-func (sh *SampleHandler) validate(ctx context.Context, msg *SampleMessage) error {
+func (shi *sampleHandlerImpl) HandleDeadLetterMessage(ctx context.Context, msg *sampleMessage) error {
+	if shi == nil {
+		return errors.New("*sampleHandlerImpl is nil")
+	}
+	log.Printf("[DEAD LETTER MESSAGE] %s", msg.word)
+	// basically, need error log to alert the dead letter message
 	return nil
 }
 
-func NewSampleHandler() Handler[SampleMessage] {
-	return &SampleHandler{}
+func (shi *sampleHandlerImpl) validate(ctx context.Context, msg *sampleMessage) error {
+	if shi == nil {
+		return errors.New("*sampleHandlerImpl is nil")
+	}
+	return nil
 }
