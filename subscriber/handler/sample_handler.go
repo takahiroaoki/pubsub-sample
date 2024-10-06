@@ -12,7 +12,7 @@ func (shi *sampleHandlerImpl) HandleMessage(ctx context.Context, msg *sampleMess
 	if shi == nil {
 		return errors.New("*sampleHandlerImpl is nil")
 	}
-	log.Printf("[INFO] > %s", msg.word)
+	log.Printf("[MESSAGE] %s", msg.word)
 	return nil
 }
 
@@ -20,7 +20,7 @@ func (shi *sampleHandlerImpl) HandleDeadLetterMessage(ctx context.Context, msg *
 	if shi == nil {
 		return errors.New("*sampleHandlerImpl is nil")
 	}
-	log.Printf("[INFO] > %s", msg.word)
+	log.Printf("[DEAD LETTER MESSAGE] %s", msg.word)
 	// basically, need error log to alert the dead letter message
 	return nil
 }

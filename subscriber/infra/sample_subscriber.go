@@ -38,6 +38,7 @@ func (ss *sampleSubscriberImpl) Receive(ctx context.Context, msgHandler handler.
 			// make pubsub retry
 			msg.Nack()
 		}
+		msg.Ack()
 	}); err != nil {
 		return err
 	}
