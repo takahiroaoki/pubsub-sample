@@ -1,4 +1,5 @@
 # pubsub-sample
+This is a sample project for Cloud PubSub with golang.
 
 ## Requirement
 - Docker Desktop
