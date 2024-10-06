@@ -12,8 +12,8 @@ func main() {
 	flag.Parse()
 
 	pubsubConfig := config.NewPubSubConfig()
-	samplePublisherConfig := infra.NewSamplePublisherConfig(pubsubConfig.ProjectID(), pubsubConfig.TopicID())
-	samplePublisher, closeFunc, err := infra.NewSamplePublisher(samplePublisherConfig)
+	publisherConfig := infra.NewPublisherConfig(pubsubConfig.ProjectID(), pubsubConfig.TopicID())
+	samplePublisher, closeFunc, err := infra.NewSamplePublisher(publisherConfig)
 	if err != nil {
 		log.Fatalln(err)
 	}
