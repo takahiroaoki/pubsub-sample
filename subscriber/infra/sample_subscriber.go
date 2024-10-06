@@ -15,7 +15,7 @@ type sampleSubscriberImpl struct {
 	dlSubscription *pubsub.Subscription
 }
 
-func (ss *sampleSubscriberImpl) Receive(ctx context.Context, msgHandler handler.SampleHandler) error {
+func (ss *sampleSubscriberImpl) Receive(ctx context.Context, msgHandler handler.Handler[handler.SampleMessage]) error {
 	if ss == nil {
 		return errors.New("*sampleSubscriberImpl is nil")
 	}
@@ -49,7 +49,7 @@ func (ss *sampleSubscriberImpl) HasDeadLetterSubscription() bool {
 	return true
 }
 
-func (ss *sampleSubscriberImpl) ReceiveDeadLetter(ctx context.Context, msgHandler handler.SampleHandler) error {
+func (ss *sampleSubscriberImpl) ReceiveDeadLetter(ctx context.Context, msgHandler handler.Handler[handler.SampleMessage]) error {
 	if ss == nil {
 		return errors.New("*sampleSubscriberImpl is nil")
 	}

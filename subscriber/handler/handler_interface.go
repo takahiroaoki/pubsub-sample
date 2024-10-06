@@ -11,20 +11,16 @@ type Handler[Message any] interface {
 /*
 SampleHandler
 */
-type sampleMessage struct {
+type SampleMessage struct {
 	word string
 }
 
-func NewSampleMessage(word string) *sampleMessage {
-	return &sampleMessage{
+func NewSampleMessage(word string) *SampleMessage {
+	return &SampleMessage{
 		word: word,
 	}
 }
 
-type SampleHandler interface {
-	Handler[sampleMessage]
-}
-
-func NewSampleHandler() SampleHandler {
+func NewSampleHandler() Handler[SampleMessage] {
 	return &sampleHandlerImpl{}
 }

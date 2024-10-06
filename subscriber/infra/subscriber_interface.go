@@ -9,10 +9,10 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-type Subscriber[Handler any] interface {
-	Receive(ctx context.Context, msgHandler Handler) error
+type Subscriber[Message any] interface {
+	Receive(ctx context.Context, msgHandler handler.Handler[Message]) error
 	HasDeadLetterSubscription() bool
-	ReceiveDeadLetter(ctx context.Context, msgHandler Handler) error
+	ReceiveDeadLetter(ctx context.Context, msgHandler handler.Handler[Message]) error
 }
 
 type subscriberConfig struct {
@@ -44,7 +44,7 @@ func startSubscription(ctx context.Context, client *pubsub.Client, subscriptionI
 /*
 SampleSubscriber
 */
-func NewSampleSubscriber(ctx context.Context, config subscriberConfig) (Subscriber[handler.SampleHandler], func(), error) {
+func NewSampleSubscriber(ctx context.Context, config subscriberConfig) (Subscriber[handler.SampleMessage], func(), error) {
 	client, err := pubsub.NewClient(ctx, config.projectID)
 	if err != nil {
 		return nil, nil, err

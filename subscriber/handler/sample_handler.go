@@ -8,7 +8,7 @@ import (
 
 type sampleHandlerImpl struct{}
 
-func (shi *sampleHandlerImpl) HandleMessage(ctx context.Context, msg *sampleMessage) error {
+func (shi *sampleHandlerImpl) HandleMessage(ctx context.Context, msg *SampleMessage) error {
 	if shi == nil {
 		return errors.New("*sampleHandlerImpl is nil")
 	}
@@ -16,7 +16,7 @@ func (shi *sampleHandlerImpl) HandleMessage(ctx context.Context, msg *sampleMess
 	return nil
 }
 
-func (shi *sampleHandlerImpl) HandleDeadLetterMessage(ctx context.Context, msg *sampleMessage) error {
+func (shi *sampleHandlerImpl) HandleDeadLetterMessage(ctx context.Context, msg *SampleMessage) error {
 	if shi == nil {
 		return errors.New("*sampleHandlerImpl is nil")
 	}
@@ -25,7 +25,7 @@ func (shi *sampleHandlerImpl) HandleDeadLetterMessage(ctx context.Context, msg *
 	return nil
 }
 
-func (shi *sampleHandlerImpl) validate(ctx context.Context, msg *sampleMessage) error {
+func (shi *sampleHandlerImpl) validate(ctx context.Context, msg *SampleMessage) error {
 	if shi == nil {
 		return errors.New("*sampleHandlerImpl is nil")
 	}
