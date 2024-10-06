@@ -10,26 +10,33 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-type SampleSubscriber struct {
-	subscription *pubsub.Subscription
+type sampleSubscriberImpl struct {
+	subscription   *pubsub.Subscription
+	dlSubscription *pubsub.Subscription
 }
 
-func (ss *SampleSubscriber) Receive(ctx context.Context, msgHandler handler.Handler[handler.SampleMessage]) error {
+func (ss *sampleSubscriberImpl) Receive(ctx context.Context, msgHandler handler.SampleHandler) error {
+	if ss == nil {
+		return errors.New("*sampleSubscriberImpl is nil")
+	}
+
 	if err := ss.subscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		if msg.DeliveryAttempt != nil {
-			log.Printf("DeliveryAttempt: %v", *msg.DeliveryAttempt)
+			log.Printf("[INFO] delivery-attempt: %v", *msg.DeliveryAttempt)
 		}
 
 		decoded := struct {
 			Word string `json:"word"`
 		}{}
 		if err := json.Unmarshal(msg.Data, &decoded); err != nil {
-			log.Println("Error on unmarshal message")
+			log.Printf("[ERROR] unmarshal message: %v", err)
+			// it is useless to retry the msssage that cannot be unmarshalled
 			msg.Ack()
 		}
 		if err := msgHandler.HandleMessage(ctx, handler.NewSampleMessage(decoded.Word)); err != nil {
-			log.Println(err)
-			ss.handleError(err, msg)
+			log.Printf("[WARN] handle message: %v", err)
+			// make pubsub retry
+			msg.Nack()
 		}
 	}); err != nil {
 		return err
@@ -37,44 +44,31 @@ func (ss *SampleSubscriber) Receive(ctx context.Context, msgHandler handler.Hand
 	return nil
 }
 
-func (ss *SampleSubscriber) handleError(err error, msg *pubsub.Message) {
-	// TODO
+func (ss *sampleSubscriberImpl) HasDeadLetterSubscription() bool {
+	return true
 }
 
-type SampleSubscriberConfig struct {
-	projectID      string
-	subscriptionID string
-}
-
-func NewSampleSubscriberConfig(projectID string, subscriptionID string) SampleSubscriberConfig {
-	return SampleSubscriberConfig{
-		projectID:      projectID,
-		subscriptionID: subscriptionID,
-	}
-}
-
-func NewSampleSubscriber(ctx context.Context, config SampleSubscriberConfig) (Subscriber[handler.SampleMessage], func(), error) {
-	client, err := pubsub.NewClient(ctx, config.projectID)
-	if err != nil {
-		return nil, nil, err
+func (ss *sampleSubscriberImpl) ReceiveDeadLetter(ctx context.Context, msgHandler handler.SampleHandler) error {
+	if ss == nil {
+		return errors.New("*sampleSubscriberImpl is nil")
 	}
 
-	closeFunc := func() {
-		if err := client.Close(); err != nil {
-			log.Println("falied to close subscription client")
+	if err := ss.dlSubscription.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
+		// it is useless to retry the dead letter message
+		msg.Ack()
+
+		decoded := struct {
+			Word string `json:"word"`
+		}{}
+		if err := json.Unmarshal(msg.Data, &decoded); err != nil {
+			log.Printf("[ERROR] unmarshal dead letter message: %v", err)
+			return
 		}
+		if err := msgHandler.HandleDeadLetterMessage(ctx, handler.NewSampleMessage(decoded.Word)); err != nil {
+			log.Printf("[ERROR] handle dead letter message: %v", err)
+		}
+	}); err != nil {
+		return err
 	}
-
-	subscription := client.Subscription(config.subscriptionID)
-	exists, err := subscription.Exists(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-	if !exists {
-		return nil, nil, errors.New("subscription does not exist")
-	}
-
-	return &SampleSubscriber{
-		subscription: subscription,
-	}, closeFunc, nil
+	return nil
 }
