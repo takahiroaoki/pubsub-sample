@@ -1,7 +1,7 @@
 #/bin/sh
 
 # create topics
-ENDPOINT="http://${PUBSUB_EMULATOR_HOST}/v1/projects/${PUBSUB_PROJECT_ID}"
+ENDPOINT="${PUBSUB_EMULATOR_HOST}/v1/projects/${PUBSUB_PROJECT_ID}"
 curl -S -XPUT "${ENDPOINT}/topics/${PUBSUB_TOPIC_ID}"
 curl -S -XPUT "${ENDPOINT}/topics/${PUBSUB_DEAD_LETTER_TOPIC_ID}"
 

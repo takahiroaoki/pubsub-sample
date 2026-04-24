@@ -37,7 +37,9 @@ services:
       PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
       PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
       PUBSUB_EMULATOR_HOST: 0.0.0.0:8085
-    command: /bin/bash 'gcloud beta emulators pubsub start --project=$PUBSUB_PROJECT_ID --host-port=$PUBSUB_EMULATOR_HOST'
+    volumes:
+      - ./pubsub:/pubsub
+    command: /bin/bash /pubsub/start.sh
   spanner:
     image: gcr.io/cloud-spanner-emulator/emulator:1.5.12
   spanner-init:
