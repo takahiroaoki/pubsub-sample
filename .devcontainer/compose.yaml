@@ -10,7 +10,7 @@ services:
     working_dir: /mnt/pubsub-sample
     tty: true
     depends_on:
-      - pubsub
+      #- pubsub
       - spanner
     environment:
       # pubsub
