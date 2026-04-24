@@ -1,8 +1,6 @@
 setup:
-	chmod 777 setup.sh
-	./setup.sh
-	cd ./subscriber && go mod tidy
-	cd ./publisher && go mod tidy
+	chmod 777 .devcontainer/pubsub/setup.sh
+	.devcontainer/pubsub/setup.sh
 
 subscribe:
 	cd ./subscriber && go run main.go

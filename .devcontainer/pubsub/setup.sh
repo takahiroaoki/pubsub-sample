@@ -1,13 +1,7 @@
 #/bin/sh
 
-apk add netcat curl
-
-while ! nc -z pubsub 8085; do
-  sleep 0.1
-done
-
 # create topics
-ENDPOINT="${PUBSUB_EMULATOR_HOST}/v1/projects/${PUBSUB_PROJECT_ID}"
+ENDPOINT="http://${PUBSUB_EMULATOR_HOST}/v1/projects/${PUBSUB_PROJECT_ID}"
 curl -S -XPUT "${ENDPOINT}/topics/${PUBSUB_TOPIC_ID}"
 curl -S -XPUT "${ENDPOINT}/topics/${PUBSUB_DEAD_LETTER_TOPIC_ID}"
 
