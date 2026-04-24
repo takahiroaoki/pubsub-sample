@@ -41,7 +41,19 @@ services:
       PUBSUB_EMULATOR_HOST: 0.0.0.0:8085
     volumes:
       - ./pubsub:/pubsub
-    command: /bin/bash /pubsub/setup.sh
+    command: /bin/bash 'gcloud beta emulators pubsub start --project=$PUBSUB_PROJECT_ID --host-port=$PUBSUB_EMULATOR_HOST'
+  pubsub-init:
+    image: alpine:3.22.4
+    environment:
+      PUBSUB_PROJECT_ID: $PUBSUB_PROJECT_ID
+      PUBSUB_TOPIC_ID: $PUBSUB_TOPIC_ID
+      PUBSUB_DEAD_LETTER_TOPIC_ID: $PUBSUB_DEAD_LETTER_TOPIC_ID
+      PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
+      PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+    volumes:
+      - ./pubsub:/pubsub
+    command: /bin/sh /pubsub/setup.sh
   spanner:
     image: gcr.io/cloud-spanner-emulator/emulator:1.5.12
   spanner-init:
