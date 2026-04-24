@@ -14,4 +14,10 @@ $ make topic
 
 # start publisher
 $ make run-publisher
+
+# start subscriber
+$ make run-subscriber
+
+# publish
+$ make publish
 ```

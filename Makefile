@@ -1,4 +1,4 @@
-.PHONY: topic publish
+.PHONY: topic publish run-publisher run-subscriber
 
 topic:
 	chmod 777 .devcontainer/pubsub/topic.sh
@@ -9,3 +9,6 @@ publish:
 
 run-publisher:
 	go run main.go publisher
+
+run-subscriber:
+	go run main.go subscriber
