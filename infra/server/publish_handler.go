@@ -14,7 +14,10 @@ type publishHandler struct {
 	p publisher
 }
 
-func (h *publishHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
+func (h *publishHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	h.p.Publish(ctx, model.Something{})
+}
 
 func NewPublishHandler(p publisher) http.Handler {
 	return &publishHandler{

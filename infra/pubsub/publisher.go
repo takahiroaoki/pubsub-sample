@@ -3,6 +3,7 @@ package publisher
 import (
 	"context"
 	"pubsub-sample/model"
+	"pubsub-sample/util"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -12,6 +13,7 @@ type publisher struct {
 }
 
 func (p *publisher) Publish(ctx context.Context, msg model.Something) (string, error) {
+	util.InfoLog("published!")
 	return "", nil
 }
 
