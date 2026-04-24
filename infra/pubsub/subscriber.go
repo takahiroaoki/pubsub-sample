@@ -26,13 +26,15 @@ func startSubscription(ctx context.Context, client *pubsub.Client, subscriptionI
 type subscriber struct {
 	subscription   *pubsub.Subscription
 	dlSubscription *pubsub.Subscription
+	msgHandler     msgHandler
+	dlMsgHandler   msgHandler
 }
 
 type msgHandler interface {
 	Handle(ctx context.Context, st model.Something) error
 }
 
-func (s *subscriber) Receive(ctx context.Context, handler msgHandler) error {
+func (s *subscriber) Receive(ctx context.Context) error {
 	if s == nil {
 		return errors.New("*subscriber is nil")
 	}
@@ -48,7 +50,7 @@ func (s *subscriber) Receive(ctx context.Context, handler msgHandler) error {
 			// it is useless to retry the msssage that cannot be unmarshalled
 			msg.Ack()
 		}
-		if err := handler.Handle(ctx, decoded); err != nil {
+		if err := s.msgHandler.Handle(ctx, decoded); err != nil {
 			util.WarnLog(fmt.Sprintf("handle message: %v", err))
 			// make pubsub retry
 			msg.Nack()
@@ -60,11 +62,7 @@ func (s *subscriber) Receive(ctx context.Context, handler msgHandler) error {
 	return nil
 }
 
-func (s *subscriber) HasDeadLetterSubscription() bool {
-	return s.dlSubscription != nil
-}
-
-func (s *subscriber) ReceiveDeadLetter(ctx context.Context, handler msgHandler) error {
+func (s *subscriber) ReceiveDeadLetter(ctx context.Context) error {
 	if s == nil {
 		return errors.New("*subscriber is nil")
 	}
@@ -78,7 +76,7 @@ func (s *subscriber) ReceiveDeadLetter(ctx context.Context, handler msgHandler) 
 			util.ErrorLog((fmt.Sprintf("unmarshal dead letter message: %v", err)))
 			return
 		}
-		if err := handler.Handle(ctx, decoded); err != nil {
+		if err := s.dlMsgHandler.Handle(ctx, decoded); err != nil {
 			util.ErrorLog(fmt.Sprintf("handle dead letter message: %v", err))
 		}
 	}); err != nil {
@@ -87,7 +85,7 @@ func (s *subscriber) ReceiveDeadLetter(ctx context.Context, handler msgHandler) 
 	return nil
 }
 
-func NewSubscriber(projectID, subscriptionID, dlSubscriptionID string) (s *subscriber, closeFunc func() error, err error) {
+func NewSubscriber(projectID, subscriptionID, dlSubscriptionID string, msgHandler, dlMsgHandler msgHandler) (s *subscriber, closeFunc func() error, err error) {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
@@ -102,20 +100,19 @@ func NewSubscriber(projectID, subscriptionID, dlSubscriptionID string) (s *subsc
 		return nil
 	}
 
-	subscriber := &subscriber{}
-
 	subscription, err := startSubscription(ctx, client, subscriptionID)
 	if err != nil {
 		return nil, nil, err
 	}
-	subscriber.subscription = subscription
-
-	if len(dlSubscriptionID) > 0 {
-		dlSubscription, err := startSubscription(ctx, client, dlSubscriptionID)
-		if err != nil {
-			return nil, nil, err
-		}
-		subscriber.dlSubscription = dlSubscription
+	dlSubscription, err := startSubscription(ctx, client, dlSubscriptionID)
+	if err != nil {
+		return nil, nil, err
+	}
+	subscriber := &subscriber{
+		subscription:   subscription,
+		dlSubscription: dlSubscription,
+		msgHandler:     msgHandler,
+		dlMsgHandler:   dlMsgHandler,
 	}
 
 	return subscriber, closeFunc, nil
