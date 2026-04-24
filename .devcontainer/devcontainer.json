@@ -7,8 +7,9 @@
     "vscode": {
       "extensions": [
         "golang.Go",
-        "ms-azuretools.vscode-docker"
-			]
-		}
-	}
+        "ms-azuretools.vscode-docker",
+        "google-cloud-spanner-ecosystem.google-cloud-spanner-driver"
+      ]
+    }
+  }
 }

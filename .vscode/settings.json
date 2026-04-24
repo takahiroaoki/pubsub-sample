@@ -1,0 +1,15 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "Google Cloud Spanner Driver",
+            "name": "spanner",
+            "instance": "test-instance",
+            "database": "test-database",
+            "project": "test-project",
+            "connectToEmulator": true,
+            "emulatorHost": "spanner",
+            "emulatorPort": 9010,
+        }
+    ]
+}

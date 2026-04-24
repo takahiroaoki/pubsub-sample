@@ -11,15 +11,23 @@ services:
     tty: true
     depends_on:
       - pubsub
+      - spanner
     environment:
+      # pubsub
       PUBSUB_PROJECT_ID: $PUBSUB_PROJECT_ID
       PUBSUB_TOPIC_ID: $PUBSUB_TOPIC_ID
       PUBSUB_DEAD_LETTER_TOPIC_ID: $PUBSUB_DEAD_LETTER_TOPIC_ID
       PUBSUB_SUBSCRIPTION_ID: $PUBSUB_SUBSCRIPTION_ID
       PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
       PUBSUB_EMULATOR_HOST: pubsub:8085
+      # spanner
+      PROJECT_NAME: test-project
+      INSTANCE_NAME: test-instance
+      DB_NAME: test-database
+      DB_TIMEZONE: UTC
+      SPANNER_EMULATOR_HOST: spanner:9010
   pubsub:
-    image: docker.io/google/cloud-sdk:494.0.0
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:474.0.0-emulators
     ports:
       - 8085:8085
     environment:
@@ -30,5 +38,17 @@ services:
       PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID: $PUBSUB_DEAD_LETTER_SUBSCRIPTION_ID
       PUBSUB_EMULATOR_HOST: 0.0.0.0:8085
     volumes:
-      - ../pubsub:/pubsub
-    command: /bin/bash /pubsub/command.sh
+      - ./pubsub:/pubsub
+    command: /bin/bash /pubsub/setup.sh
+  spanner:
+    image: gcr.io/cloud-spanner-emulator/emulator:1.5.12
+  spanner-init:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:549.0.0-slim
+    volumes:
+      - ./spanner:/spanner
+    command: /bin/bash /spanner/setup.sh
+    environment:
+      SPANNER_EMULATOR_URL: spanner:9010
+    depends_on:
+      spanner:
+        condition: service_started
