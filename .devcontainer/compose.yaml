@@ -10,7 +10,7 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      #- pubsub
+      - pubsub
       - spanner
     environment:
       # pubsub
