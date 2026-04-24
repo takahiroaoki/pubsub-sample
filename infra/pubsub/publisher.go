@@ -1,10 +1,11 @@
-package publisher
+package pubsubclient
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"pubsub-sample/model"
-	"pubsub-sample/util"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -13,9 +14,22 @@ type publisher struct {
 	topic *pubsub.Topic
 }
 
-func (p *publisher) Publish(ctx context.Context, msg model.Something) (string, error) {
-	util.InfoLog("published!")
-	return "", nil
+func (p *publisher) Publish(ctx context.Context, st model.Something) (string, error) {
+	data, err := json.Marshal(st)
+	if err != nil {
+		return "", err
+	}
+
+	orderingKey := time.Now().String()
+	srvID, err := p.topic.Publish(ctx, &pubsub.Message{
+		OrderingKey: orderingKey,
+		Data:        data,
+	}).Get(ctx)
+	if err != nil {
+		p.topic.ResumePublish(orderingKey)
+		return srvID, err
+	}
+	return srvID, nil
 }
 
 func NewPublisher(projectID, topicID string) (p *publisher, closeFunc func() error, err error) {

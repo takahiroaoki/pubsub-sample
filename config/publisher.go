@@ -5,12 +5,12 @@ type PublisherConfig struct {
 	topicID   string
 }
 
-func (psc PublisherConfig) ProjectID() string {
-	return psc.projectID
+func (c PublisherConfig) ProjectID() string {
+	return c.projectID
 }
 
-func (psc PublisherConfig) TopicID() string {
-	return psc.topicID
+func (c PublisherConfig) TopicID() string {
+	return c.topicID
 }
 
 func NewPublisherConfig() PublisherConfig {

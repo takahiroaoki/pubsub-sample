@@ -12,6 +12,7 @@ func NewRootCmd() *cobra.Command {
 	}
 	root.AddCommand(
 		newPublisherCmd(),
+		newSubscriberCmd(),
 	)
 	return root
 }

@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"pubsub-sample/config"
-	publisher "pubsub-sample/infra/pubsub"
+	pubsubclient "pubsub-sample/infra/pubsub"
 	"pubsub-sample/infra/server"
 	"pubsub-sample/util"
 	"syscall"
@@ -22,13 +22,13 @@ func newPublisherCmd() *cobra.Command {
 		Use: "publisher",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			publisherConfig := config.NewPublisherConfig()
-			publisher, closeFunc, err := publisher.NewPublisher(
+			publisher, closeFunc, err := pubsubclient.NewPublisher(
 				publisherConfig.ProjectID(),
 				publisherConfig.TopicID(),
 			)
 			defer closeFunc()
 			if err != nil {
-				util.FatalLog(fmt.Sprintf("[NewPublisher] %v", err))
+				util.FatalLog(fmt.Sprintf("NewPublisher: %v", err))
 			}
 
 			srv := &http.Server{

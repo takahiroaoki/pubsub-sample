@@ -10,5 +10,14 @@ The maintainer uses GitHub Codespaces
 ## How to use
 ```
 # create topics and subscriptions
-$ make setup
+$ make topic
+
+# start publisher
+$ make run-publisher
+
+# start subscriber
+$ make run-subscriber
+
+# publish
+$ make publish
 ```
