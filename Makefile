@@ -1,11 +1,5 @@
-setup:
-	chmod 777 setup.sh
-	./setup.sh
-	cd ./subscriber && go mod tidy
-	cd ./publisher && go mod tidy
+.PHONY: topic
 
-subscribe:
-	cd ./subscriber && go run main.go
-
-publish:
-	cd ./publisher && go run main.go -msg=$(msg)
+topic:
+	chmod 777 .devcontainer/pubsub/topic.sh
+	.devcontainer/pubsub/topic.sh

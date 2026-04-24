@@ -1,13 +1,4 @@
-#/bin/bash
-
-set -em
-
-# start emulator
-gcloud beta emulators pubsub start --project=$PUBSUB_PROJECT_ID --host-port=$PUBSUB_EMULATOR_HOST
-
-while ! nc -z localhost 8085; do
-  sleep 0.1
-done
+#/bin/sh
 
 # create topics
 ENDPOINT="${PUBSUB_EMULATOR_HOST}/v1/projects/${PUBSUB_PROJECT_ID}"
